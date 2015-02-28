@@ -1,0 +1,61 @@
+<project name="myant" default="dist" basedir=".">
+
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="lib"  location="lib"/>
+  <property name="test"  location="test"/>
+  <property name="test-res"  location="test-res"/>
+  <property name="config"  location="config"/>
+  <property name="artifact"  location="artifact"/>
+<path id="build.classpath">
+   <fileset dir="${lib}">
+     <include name="**/*.jar"/>
+   </fileset>
+</path>
+
+  <target name="init" depends="clean">
+    <tstamp />
+    <mkdir dir="${build}"/>
+    <mkdir dir="${dist}"/>
+  </target>
+
+  <target name="compile" depends="init" >
+    <javac srcdir="${src}" destdir="${build}" classpathref="build.classpath"/>
+  </target>
+
+<target name="test" depends="compile, clean">
+<mkdir dir="${test-res}"/>
+<junit showoutput="true" printsummary="yes" haltonfailure="no">
+	<classpath refid="build.classpath" />
+	<formatter type="plain" usefile="false"/>
+	<!--<batchtest fork="yes" todir="${test-res}">
+		<fileset dir="${test}">
+			<include name="${test}/com/test/*.java"/>
+		</fileset>
+	</batchtest>-->
+<test name="com.test.UnitTest" todir="${test-res}" outfile="${test-res}/testresult" />
+</junit>
+</target>
+
+  <target name="jar" depends="test">
+    <jar jarfile="${dist}/myant-${DSTAMP}-${TSTAMP}.jar" basedir="${build}"/>
+  </target>
+
+  <target name="dist" depends="jar, clean" >
+    <mkdir dir="${artifact}" />
+<zip destfile="${artifact}/artifact-${DSTAMP}-${TSTAMP}.zip">
+    <fileset dir="${dist}"/>
+    <fileset dir="${lib}"/>
+    <fileset dir="${config}"/>
+</zip>
+  </target>
+
+
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+    <delete dir="${test-res}"/>
+    <delete dir="${artifact}"/>
+  </target>
+</project>
